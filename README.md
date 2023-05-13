@@ -21,5 +21,5 @@ There are three main tables:
 9. About 52448 collisions involved school buses, and this accounts for about 0.56% of total collisions.
 10. There are more victims within the age groups of 10-20 and 20-30, than any other age groups
 
-##Conclusion
+## Conclusion
 There is so much to discover from analysing this database. I have attempted to answer just some few questions in this notebook but further analysis can always be carried out to discover more interesting information.
