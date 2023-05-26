@@ -1,4 +1,4 @@
-# SQL-Analysis-of-California-Traffic-Collisions
+# SQL Analysis of California Traffic Collisions
 
 ## Project overview
 Exploratory data analysis using sql in jupyter notebook with the aid of jupysql (an improvement over ipythonsql) and duckdb (which is an in-process SQL OLAP Database Management System). The database used is the California Traffic Collision Data from SWITRS obtained from [kaggle](https://www.kaggle.com/datasets/alexgude/california-traffic-collision-data-from-switrs?resource=download).
@@ -8,6 +8,33 @@ There are three main tables:
 1. collisions: Contains information about the collision, where it happened, what vehicles were involved etc. ,each row represents a distinct collision.
 2. parties contains information about the groups of people directly involved in the collision.
 3. victims contains information about the injuries of specific people involved in the collision.
+
+### Examples of queries used in the analysis
+
+### Example 1: Using Windows Rank Function to rank the 7 most frequent vehicle make involved in traffic collisions 
+       %%sql
+       WITH vehicle_collisions AS (SELECT DISTINCT vehicle_make,
+       COUNT(*) OVER (PARTITION BY vehicle_make) AS 'Number of collisions',
+       FROM parties
+       WHERE (vehicle_make IS NOT NULL))
+       SELECT *,RANK() OVER(ORDER BY "Number of collisions" DESC) AS 'Rank'
+       FROM vehicle_collisions
+       LIMIT 7;
+       
+### Example 2: Using CTE, CASE statement and GROUP BY clause to get number of collsions for different time periods 
+        %sql
+        WITH time_period AS (SELECT (CASE 
+                WHEN  CAST(collision_time AS TIME) BETWEEN '05:00:00' AND '12:00:00' THEN 'Morning'
+                WHEN  CAST(collision_time AS TIME) BETWEEN '12:00:01' AND '17:00:00' THEN 'Afternoon'
+                WHEN  CAST(collision_time AS TIME) BETWEEN '17:00:01' AND '21:00:00' THEN 'Evening'
+                ELSE 'Night' 
+                END) AS period 
+        FROM collisions)
+
+        SELECT period, count(*) AS 'Number of collisions'
+        FROM time_period
+        GROUP BY period
+        ORDER BY count(*) DESC;
 
 ### Some insights from the analysis
 1. The database contained records of collisions from 1st of january, 2001 to 3rd of june, 2021
